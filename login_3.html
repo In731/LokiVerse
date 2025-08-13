@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>LokiVerse Login</title>
+  <link rel="icon" type="image/png"
+    href="C:\Users\MUKESH\OneDrive\Desktop\loki-multiverse\Screenshot 2025-07-16 173442.png" />
+  <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+  <!-- jQuery for text animation -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: auto;
+      background: hsl(260, 18%, 12%);
+    }
+
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      z-index: 2;
+    }
+
+    :root {
+      --glow-sens: 30;
+      --card-bg: rgba(30, 30, 50, 0.98);
+      --blend: soft-light;
+      --glow-blend: plus-lighter;
+      --glow-color: 40deg 80% 80%;
+      --fg: white;
+      --h: 260;
+    }
+
+    body.light {
+      background-image: linear-gradient(180deg, hsl(var(--h), 8%, 58%), hsl(var(--h), 15%, 42%));
+    }
+
+    .wrapper.light .login-container {
+      --card-bg: rgba(200, 200, 220, 0.98);
+      --blend: darken;
+      --glow-blend: luminosity;
+      --glow-color: 280deg 90% 95%;
+      --fg: black;
+      color: var(--fg);
+    }
+
+    .login-container {
+      --pads: 40px;
+      --color-sens: calc(var(--glow-sens) + 20);
+      position: relative;
+      width: clamp(320px, calc(100svw - calc(var(--pads) * 2)), 600px);
+      height: calc(100svh - calc(var(--pads) * 2));
+      max-height: 600px;
+      border-radius: 1.768em;
+      isolation: isolate;
+      transform: translate3d(0, 0, 0.01px);
+      display: grid;
+      border: 1px solid rgb(255 255 255 / 25%);
+      background: var(--card-bg);
+      background-repeat: no-repeat;
+      margin-right: 30%;
+      color: var(--fg);
+      animation: fadeInUp 1s ease-out forwards;
+      z-index: 3;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-container::before,
+    .login-container::after,
+    .login-container>.glow {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      transition: opacity 0.25s ease-out;
+      z-index: -1;
+    }
+
+    .login-container:not(:hover):not(.animating)::before,
+    .login-container:not(:hover):not(.animating)::after,
+    .login-container:not(:hover):not(.animating)>.glow {
+      opacity: 0;
+      transition: opacity 0.75s ease-in-out;
+    }
+
+    .login-container::before {
+      border: 1px solid transparent;
+      background:
+        linear-gradient(var(--card-bg) 0 100%) padding-box,
+        linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
+        radial-gradient(at 80% 55%, hsla(268, 100%, 76%, 1) 0px, transparent 50%) border-box,
+        radial-gradient(at 69% 34%, hsla(349, 100%, 74%, 1) 0px, transparent 50%) border-box,
+        radial-gradient(at 8% 6%, hsla(136, 100%, 78%, 1) 0px, transparent 50%) border-box,
+        radial-gradient(at 41% 38%, hsla(192, 100%, 64%, 1) 0px, transparent 50%) border-box,
+        radial-gradient(at 86% 85%, hsla(186, 100%, 74%, 1) 0px, transparent 50%) border-box,
+        radial-gradient(at 82% 18%, hsla(52, 100%, 65%, 1) 0px, transparent 50%) border-box,
+        radial-gradient(at 51% 4%, hsla(12, 100%, 72%, 1) 0px, transparent 50%) border-box,
+        linear-gradient(#c299ff 0 100%) border-box;
+      opacity: calc((var(--pointer-d) - var(--color-sens)) / (100 - var(--color-sens)));
+      mask-image: conic-gradient(from var(--pointer-°) at center, black 25%, transparent 40%, transparent 60%, black 75%);
+    }
+
+    .login-container::after {
+      border: 1px solid transparent;
+      background:
+        radial-gradient(at 80% 55%, hsla(268, 100%, 76%, 1) 0px, transparent 50%) padding-box,
+        radial-gradient(at 69% 34%, hsla(349, 100%, 74%, 1) 0px, transparent 50%) padding-box,
+        radial-gradient(at 8% 6%, hsla(136, 100%, 78%, 1) 0px, transparent 50%) padding-box,
+        radial-gradient(at 41% 38%, hsla(192, 100%, 64%, 1) 0px, transparent 50%) padding-box,
+        radial-gradient(at 86% 85%, hsla(186, 100%, 74%, 1) 0px, transparent 50%) padding-box,
+        radial-gradient(at 82% 18%, hsla(52, 100%, 65%, 1) 0px, transparent 50%) padding-box,
+        radial-gradient(at 51% 4%, hsla(12, 100%, 72%, 1) 0px, transparent 50%) padding-box,
+        linear-gradient(#c299ff 0 100%) padding-box;
+      mask-image:
+        linear-gradient(to bottom, black, black),
+        radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
+        radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%),
+        radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%),
+        radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%),
+        radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%),
+        conic-gradient(from var(--pointer-°) at center, transparent 5%, black 15%, black 85%, transparent 95%);
+      mask-composite: subtract, add, add, add, add, add;
+      opacity: calc((var(--pointer-d) - var(--color-sens)) / (100 - var(--color-sens)));
+      mix-blend-mode: var(--blend);
+    }
+
+    .login-container>.glow {
+      --outset: var(--pads);
+      inset: calc(var(--outset) * -1);
+      pointer-events: none;
+      z-index: 1;
+      mask-image: conic-gradient(from var(--pointer-°) at 50% 50%, black 2.5%, transparent 10%, transparent 90%, black 97.5%);
+      opacity: calc((var(--pointer-d) - var(--glow-sens)) / (100 - var(--glow-sens)));
+      mix-blend-mode: var(--glow-blend);
+    }
+
+    .login-container>.glow::before {
+      content: "";
+      position: absolute;
+      inset: var(--outset);
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 0 1px hsl(var(--glow-color) / 100%),
+        inset 0 0 2px 2px hsl(var(--glow-color) / 90%),
+        inset 0 0 5px 1px hsl(var(--glow-color) / 75%),
+        inset 0 0 8px 1px hsl(var(--glow-color) / 66%),
+        inset 0 0 15px 0 hsl(var(--glow-color) / 50%),
+        inset 0 0 25px 2px hsl(var(--glow-color) / 30%),
+        inset 0 0 50px 2px hsl(var(--glow-color) / 10%),
+        0 0 2px 2px hsl(var(--glow-color) / 90%),
+        0 0 5px 1px hsl(var(--glow-color) / 75%),
+        0 0 8px 1px hsl(var(--glow-color) / 66%),
+        0 0 15px 0 hsl(var(--glow-color) / 50%),
+        0 0 25px 2px hsl(var(--glow-color) / 30%),
+        0 0 50px 2px hsl(var(--glow-color) / 10%);
+    }
+
+    .login-container {
+      box-shadow:
+        rgba(0, 0, 0, 0.2) 0px 1px 2px,
+        rgba(0, 0, 0, 0.2) 0px 2px 4px,
+        rgba(0, 0, 0, 0.2) 0px 4px 8px,
+        rgba(0, 0, 0, 0.2) 0px 8px 16px,
+        rgba(0, 0, 0, 0.2) 0px 16px 32px,
+        rgba(0, 0, 0, 0.2) 0px 32px 64px;
+    }
+
+    .inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      container-type: inline-size;
+      position: relative;
+      overflow: auto;
+      z-index: 1;
+      text-align: center;
+      padding: 30px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5em 1em;
+    }
+
+    h2 {
+      color: var(--fg);
+      font-weight: 500;
+      font-size: 1.25em;
+      margin-block: 0.5em;
+    }
+
+    svg:not(.intro) {
+      height: 24px;
+    }
+
+    .content {
+      padding: 1.5em;
+      font-weight: 300;
+      text-align: center;
+      line-height: 1.4;
+      color: var(--fg);
+      overflow: auto;
+      scrollbar-width: none;
+    }
+
+    .content em,
+    .content strong {
+      color: var(--fg);
+    }
+
+    .content p,
+    .content input,
+    .content div,
+    .content button,
+    .content label {
+      opacity: 0;
+      animation: fadeContent 1s ease-in-out 0.5s forwards;
+    }
+
+    .content p:nth-child(2),
+    .content input:nth-child(2),
+    .content div:nth-child(2),
+    .content button:nth-child(2),
+    .content label:nth-child(2) {
+      animation-delay: 0.75s;
+    }
+
+    .content p:nth-child(3),
+    .content input:nth-child(3),
+    .content div:nth-child(3),
+    .content button:nth-child(3),
+    .content label:nth-child(3) {
+      animation-delay: 1s;
+    }
+
+    .content p:nth-child(4),
+    .content input:nth-child(4),
+    .content div:nth-child(4),
+    .content button:nth-child(4),
+    .content label:nth-child(4) {
+      animation-delay: 1.25s;
+    }
+
+    @keyframes fadeContent {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .sun {
+      opacity: 0.25;
+    }
+
+    .sun:hover {
+      opacity: 1;
+    }
+
+    .moon {
+      opacity: 1;
+    }
+
+    .sun,
+    .moon {
+      transition: all 0.2s ease;
+    }
+
+    .wrapper.light .sun {
+      opacity: 1;
+    }
+
+    .wrapper.light .moon {
+      opacity: 0.25;
+    }
+
+    .wrapper.light .moon:hover {
+      opacity: 1;
+    }
+
+    .wrapper.light h2 {
+      text-shadow: 0 1px 1px lightslategray;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--fg);
+    }
+
+    button:not(.reload) {
+      width: 48%;
+      padding: 10px;
+      margin: 10px 1%;
+      border-radius: 6px;
+      background: linear-gradient(to right, #818cf8, #22d3ee, #9333ea);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    button:not(.reload):hover {
+      box-shadow: 0 0 8px rgba(70, 229, 81, 0.2), 0 0 16px rgba(137, 248, 129, 0.3);
+      transform: scale(1.03);
+    }
+
+    .remember-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 20px;
+      color: var(--fg);
+      font-size: 16px;
+      gap: 8px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-wrapper {
+      position: relative;
+      margin-right: 8px;
+    }
+
+    .logo-blur {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(34, 211, 238, 0.5);
+      border-radius: 6px;
+      filter: blur(2px);
+    }
+
+    .logo-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      background: linear-gradient(to bottom right, #4f46e5, #9333ea);
+      border: 1px solid rgba(129, 140, 248, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+    }
+
+    .logo-inner {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      background-color: #111827;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom right, rgba(55, 48, 163, 0.3), rgba(107, 33, 168, 0.3));
+    }
+
+    .logo-image {
+      font-weight: 700;
+      font-size: 20px;
+      background: linear-gradient(to right, #22d3ee, #818cf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-text {
+      font-size: 40px;
+      font-weight: 500;
+      background: linear-gradient(to right, #818cf8, #22d3ee, #9333ea);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+    }
+
+    svg.intro {
+      position: fixed;
+      top: 50%;
+      right: 5vw;
+      transform: translateY(-50%);
+      width: 50vw;
+      /* MODIFIED: Adjusted width for larger text */
+      height: auto;
+      z-index: 1;
+    }
+
+    svg.intro .text {
+      display: none;
+    }
+
+    svg.intro.go .text {
+      font-family: 'Lato', sans-serif;
+      font-size: 144px;
+      /* MODIFIED: Increased font size */
+      text-transform: uppercase;
+      display: block;
+    }
+
+    svg.intro.go .text-stroke {
+      fill: none;
+      stroke: #4f46e5;
+      stroke-width: 150px;
+      /* MODIFIED: Increased stroke width for fill effect */
+      stroke-dashoffset: -10000;
+      /* MODIFIED: Increased dash value for animation */
+      stroke-dasharray: 10000;
+      /* MODIFIED: Increased dash value for animation */
+      stroke-linecap: square;
+      stroke-linejoin: round;
+      animation: dash 2.5s ease-in-out forwards;
+    }
+
+    svg.intro.go .text-stroke:nth-child(2) {
+      animation-delay: .3s;
+    }
+
+    svg.intro.go .text-stroke:nth-child(3) {
+      animation-delay: .9s;
+    }
+
+    svg.intro.go .text-stroke-2 {
+      stroke: url(#textGradient);
+      animation-delay: 1.2s;
+    }
+
+    svg.intro.go .text-stroke:nth-child(5) {
+      animation-delay: 1.5s;
+    }
+
+    svg.intro.go .text-stroke:nth-child(6) {
+      animation-delay: 1.8s;
+    }
+
+    @keyframes dash {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .reload {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: #fff;
+      border: none;
+      border-radius: 20px;
+      outline: none !important;
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 8px 12px;
+      text-transform: uppercase;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 6px 7px #350e4c;
+      transition: all .1s cubic-bezier(.67, .13, .1, .81);
+    }
+
+    .reload:hover {
+      box-shadow: 0 4px 4px #350e4c;
+      transform: translateY(1px);
+    }
+
+    .reload:active {
+      box-shadow: 0 1px 2px #244B94;
+      transform: translateY(2px);
+    }
+
+    .reload svg {
+      vertical-align: middle;
+      position: relative;
+      top: -2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="login-container">
+      <span class="glow"></span>
+      <div class="inner">
+        <header>
+          <svg class="sun" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </g>
+          </svg>
+          <h2>Welcome!</h2>
+          <svg class="moon" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+          </svg>
+        </header>
+        <div class="content">
+          <div class="logo-container">
+            <div class="logo-wrapper">
+              <div class="logo-blur"></div>
+              <div class="logo-box">
+                <div class="logo-inner">
+                  <div class="logo-gradient"></div>
+                  <div class="logo-image">
+                    <img src="images/logo.png" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="logo-text">LokiVerse</div>
+          </div>
+          <input type="email" id="email" placeholder="Email" />
+          <input type="password" id="password" placeholder="Password" />
+          <div class="remember-wrapper">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">Remember Me</label>
+          </div>
+          <div style="text-align: center;">
+            <button onclick="signUp()">Sign Up</button>
+            <button onclick="logIn()">Log In</button>
+          </div>
+          <p id="message"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODIFIED: Adjusted viewBox and y-coordinates for larger text -->
+  <svg class="intro" viewBox="0 0 1200 900">
+    <defs>
+      <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#818cf8" />
+        <stop offset="50%" style="stop-color:#22d3ee" />
+        <stop offset="100%" style="stop-color:#9333ea" />
+      </linearGradient>
+      <clipPath id="text1">
+        <text text-anchor="end" x="1190" y="250" class="text">Chaos is</text>
+      </clipPath>
+      <clipPath id="text2">
+        <text text-anchor="end" x="1190" y="500" class="text">Just the</text>
+      </clipPath>
+      <clipPath id="text3">
+        <text text-anchor="end" x="1190" y="750" class="text">Beginning</text>
+      </clipPath>
+    </defs>
+    <text text-anchor="end" x="1190" y="250" class="text text-stroke" clip-path="url(#text1)">Chaos is</text>
+    <text text-anchor="end" x="1190" y="500" class="text text-stroke" clip-path="url(#text2)">Just the</text>
+    <text text-anchor="end" x="1190" y="750" class="text text-stroke" clip-path="url(#text3)">Beginning</text>
+    <text text-anchor="end" x="1190" y="250" class="text text-stroke text-stroke-2" clip-path="url(#text1)">Chaos
+      is</text>
+    <text text-anchor="end" x="1190" y="500" class="text text-stroke text-stroke-2" clip-path="url(#text2)">Just
+      the</text>
+    <text text-anchor="end" x="1190" y="750" class="text text-stroke text-stroke-2"
+      clip-path="url(#text3)">Beginning</text>
+  </svg>
+  <div>
+    <button class="reload">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1"
+        x="0px" y="0px" width="16px" height="16px" viewBox="0 0 92.33 92.33"
+        style="enable-background:new 0 0 92.33 92.33;" xml:space="preserve">
+        <g>
+          <path
+            d="M70.598,16.753c-1.722-1.24-4.113-0.852-5.349,0.866c-1.242,1.716-0.853,4.113,0.865,5.35   c13.613,9.818,18.021,27.857,10.482,42.89c-4.082,8.138-11.088,14.202-19.726,17.066c-8.636,2.871-17.877,2.2-26.013-1.879   c-8.134-4.083-14.197-11.088-17.066-19.722c-2.866-8.642-2.197-17.877,1.886-26.014c4.958-9.89,14.458-16.779,25.413-18.429   c0.074-0.008,0.137-0.036,0.211-0.053l0.157,7.571c0.021,0.839,0.542,1.585,1.321,1.889c0.782,0.305,1.672,0.11,2.25-0.496   l10.904-11.379c0.794-0.828,0.764-2.142-0.062-2.933L44.492,0.577c-0.606-0.582-1.499-0.739-2.267-0.399   c-0.251,0.108-0.476,0.269-0.662,0.462c-0.372,0.389-0.585,0.919-0.579,1.479l0.151,7.212c-0.385-0.063-0.78-0.087-1.188-0.027   c-13.418,2.021-25.052,10.46-31.125,22.571C-1.499,52.451,6.85,77.584,27.424,87.901c5.989,3.005,12.362,4.429,18.646,4.429   c15.306,0,30.065-8.439,37.382-23.028C92.688,50.884,87.284,28.782,70.598,16.753z"
+            fill="#404853" />
+        </g>
+      </svg>
+      reload
+    </button>
+  </div>
+
+  <script>
+    const fragmentShaderSource = `#version 300 es
+    precision highp float;
+
+    uniform float time;
+    uniform vec2 vp;
+
+    in vec2 uv;
+    out vec4 fragColor;
+
+    float rand(vec2 p) {
+        return fract(sin(dot(p.xy, vec2(1., 300.))) * 43758.5453123);
+    }
+
+    float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+
+        float a = rand(i);
+        float b = rand(i + vec2(1.0, 0.0));
+        float c = rand(i + vec2(0.0, 1.0));
+        float d = rand(i + vec2(1.0, 1.0));
+
+        vec2 u = f * f * (3.0 - 2.0 * f);
+
+        return mix(a, b, u.x) +
+                (c - a)* u.y * (1.0 - u.x) +
+                (d - b) * u.x * u.y;
+    }
+
+    #define OCTAVES 5
+    float fbm(vec2 p) {
+        float value = 0.;
+        float amplitude = .4;
+        float frequency = 0.;
+
+        for (int i = 0; i < OCTAVES; i++) {
+            value += amplitude * noise(p);
+            p *= 2.;
+            amplitude *= .4;
+        }
+        return value;
+    }
+
+    void main() {
+        vec2 p = uv.xy;
+        p.x *= vp.x / vp.y;
+
+        float gradient = mix(p.y*.6 + .1, p.y*1.2 + .9, fbm(p));
+        float speed = 0.2;
+        float details = 7.;
+        float force = .9;
+        float shift = .5;
+
+        vec2 fast = vec2(p.x, p.y - time*speed) * details;
+        float ns_a = fbm(fast);
+        float ns_b = force * fbm(fast + ns_a + time) - shift;
+        float nns = force * fbm(vec2(ns_a, ns_b));
+        float ins = fbm(vec2(ns_b, ns_a));
+
+        vec3 c1 = mix(vec3(.9, .5, .3), vec3(.5, .0, .0), ins + shift);
+
+        fragColor = vec4(c1 + vec3(ins - gradient), 1.0);
+    }`;
+
+    class WebGLHandler {
+      vertexShaderSource = `#version 300 es
+        precision mediump float;
+        const vec2 positions[6] = vec2[6](vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0), vec2(-1.0, 1.0), vec2(1.0, -1.0), vec2(1.0, 1.0));
+        out vec2 uv;
+        void main() {
+            uv = positions[gl_VertexID];
+            gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);
+        }`;
+
+      constructor(canvas, fragmentShaderSource) {
+        this.cn = canvas;
+        this.gl = canvas.getContext('webgl2');
+        this.startTime = Date.now();
+
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+
+        this.program = this.gl.createProgram();
+        this.compileShader(this.vertexShaderSource, this.gl.VERTEX_SHADER);
+        this.compileShader(fragmentShaderSource, this.gl.FRAGMENT_SHADER);
+        this.gl.linkProgram(this.program);
+        this.gl.useProgram(this.program);
+
+        this.timeLocation = this.gl.getUniformLocation(this.program, 'time');
+        this.resolutionLocation = this.gl.getUniformLocation(this.program, 'vp');
+
+        this.render();
+      }
+
+      resize() {
+        this.cn.width = window.innerWidth;
+        this.cn.height = window.innerHeight;
+        this.gl.viewport(0, 0, this.cn.width, this.cn.height);
+      }
+
+      compileShader(source, type) {
+        const shader = this.gl.createShader(type);
+        this.gl.shaderSource(shader, source);
+        this.gl.compileShader(shader);
+        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+          console.error(this.gl.getShaderInfoLog(shader));
+          this.gl.deleteShader(shader);
+          return null;
+        }
+        return this.gl.attachShader(this.program, shader);
+      }
+
+      render = () => {
+        this.gl.uniform1f(this.timeLocation, (Date.now() - this.startTime) / 1000);
+        this.gl.uniform2fv(this.resolutionLocation, [this.cn.width, this.cn.height]);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        window.requestAnimationFrame(this.render);
+      }
+    }
+
+    const canvas = document.body.appendChild(document.createElement('canvas'));
+    document.body.style.margin = "0";
+    document.body.style.height = "100vh";
+    canvas.style.display = "block";
+    const webGL = new WebGLHandler(canvas, fragmentShaderSource);
+
+    const $card = document.querySelector(".login-container");
+
+    const cardUpdate = (e) => {
+      const position = pointerPositionRelativeToElement($card, e);
+      const [px, py] = position.pixels;
+      const [perx, pery] = position.percent;
+      const [dx, dy] = distanceFromCenter($card, px, py);
+      const edge = closenessToEdge($card, px, py);
+      const angle = angleFromPointerEvent($card, dx, dy);
+
+      $card.style.setProperty('--pointer-x', `${round(perx)}%`);
+      $card.style.setProperty('--pointer-y', `${round(pery)}%`);
+      $card.style.setProperty('--pointer-°', `${round(angle)}deg`);
+      $card.style.setProperty('--pointer-d', `${round(edge * 100)}`);
+
+      $card.classList.remove('animating');
+    };
+
+    $card.addEventListener("pointermove", cardUpdate);
+
+    const centerOfElement = ($el) => {
+      const { left, top, width, height } = $el.getBoundingClientRect();
+      return [width / 2, height / 2];
+    };
+
+    const pointerPositionRelativeToElement = ($el, e) => {
+      const pos = [e.clientX, e.clientY];
+      const { left, top, width, height } = $el.getBoundingClientRect();
+      const x = pos[0] - left;
+      const y = pos[1] - top;
+      const px = clamp((100 / width) * x);
+      const py = clamp((100 / height) * y);
+      return { pixels: [x, y], percent: [px, py] };
+    };
+
+    const angleFromPointerEvent = ($el, dx, dy) => {
+      let angleRadians = 0;
+      let angleDegrees = 0;
+      if (dx !== 0 || dy !== 0) {
+        angleRadians = Math.atan2(dy, dx);
+        angleDegrees = angleRadians * (180 / Math.PI) + 90;
+        if (angleDegrees < 0) {
+          angleDegrees += 360;
+        }
+      }
+      return angleDegrees;
+    };
+
+    const distanceFromCenter = ($card, x, y) => {
+      const [cx, cy] = centerOfElement($card);
+      return [x - cx, y - cy];
+    };
+
+    const closenessToEdge = ($card, x, y) => {
+      const [cx, cy] = centerOfElement($card);
+      const [dx, dy] = distanceFromCenter($card, x, y);
+      let k_x = Infinity;
+      let k_y = Infinity;
+      if (dx !== 0) {
+        k_x = cx / Math.abs(dx);
+      }
+      if (dy !== 0) {
+        k_y = cy / Math.abs(dy);
+      }
+      return clamp((1 / Math.min(k_x, k_y)), 0, 1);
+    };
+
+    const round = (value, precision = 3) => parseFloat(value.toFixed(precision));
+
+    const clamp = (value, min = 0, max = 100) => Math.min(Math.max(value, min), max);
+
+    const playAnimation = () => {
+      const angleStart = 310;
+      const angleEnd = 525;
+
+      $card.style.setProperty('--pointer-°', `${angleStart}deg`);
+      $card.classList.add('animating');
+
+      animateNumber({
+        ease: easeOutCubic,
+        duration: 500,
+        onUpdate: (v) => {
+          $card.style.setProperty('--pointer-d', v);
+        }
+      });
+
+      animateNumber({
+        ease: easeInCubic,
+        delay: 0,
+        duration: 1500,
+        endValue: 50,
+        onUpdate: (v) => {
+          const d = (angleEnd - angleStart) * (v / 100) + angleStart;
+          $card.style.setProperty('--pointer-°', `${d}deg`);
+        }
+      });
+
+      animateNumber({
+        ease: easeOutCubic,
+        delay: 1500,
+        duration: 2250,
+        startValue: 50,
+        endValue: 100,
+        onUpdate: (v) => {
+          const d = (angleEnd - angleStart) * (v / 100) + angleStart;
+          $card.style.setProperty('--pointer-°', `${d}deg`);
+        }
+      });
+
+      animateNumber({
+        ease: easeInCubic,
+        duration: 1500,
+        delay: 2500,
+        startValue: 100,
+        endValue: 0,
+        onUpdate: (v) => {
+          $card.style.setProperty('--pointer-d', v);
+        },
+        onEnd: () => {
+          $card.classList.remove('animating');
+        }
+      });
+    };
+
+    setTimeout(() => {
+      playAnimation();
+    }, 500);
+
+    function easeOutCubic(x) {
+      return 1 - Math.pow(1 - x, 3);
+    }
+
+    function easeInCubic(x) {
+      return x * x * x;
+    }
+
+    function animateNumber(options) {
+      const {
+        startValue = 0,
+        endValue = 100,
+        duration = 1000,
+        delay = 0,
+        onUpdate = () => { },
+        ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+        onStart = () => { },
+        onEnd = () => { },
+      } = options;
+
+      const startTime = performance.now() + delay;
+
+      function update() {
+        const currentTime = performance.now();
+        const elapsed = currentTime - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const easedValue = startValue + (endValue - startValue) * ease(t);
+
+        onUpdate(easedValue);
+
+        if (t < 1) {
+          requestAnimationFrame(update);
+        } else if (t >= 1) {
+          onEnd();
+        }
+      }
+
+      setTimeout(() => {
+        onStart();
+        requestAnimationFrame(update);
+      }, delay);
+    }
+
+    const $app = document.querySelector('.wrapper');
+    const $moon = document.querySelector(".moon");
+    const $sun = document.querySelector(".sun");
+
+    $moon.addEventListener('click', () => {
+      document.body.classList.remove('light');
+      $app.classList.remove('light');
+    });
+
+    $sun.addEventListener('click', () => {
+      document.body.classList.add('light');
+      $app.classList.add('light');
+    });
+
+    // Text animation script
+    $(function () {
+      $('.intro').addClass('go');
+
+      $('.reload').click(function () {
+        $('.intro').removeClass('go').delay(200).queue(function (next) {
+          $('.intro').addClass('go');
+          next();
+        });
+      });
+    });
+
+    // Replace with your actual Firebase configuration from the Firebase Console
+    const firebaseConfig = {
+      apiKey: process.env.FIREBASE_API_KEY,
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.FIREBASE_APP_ID,
+      measurementId: process.env.FIREBASE_MEASUREMENT_ID
+    };
+
+    // Initialize Firebase
+    try {
+      firebase.initializeApp(firebaseConfig);
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+    }
+    const auth = firebase.auth();
+
+    function signUp() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
+
+      if (!email || !password) {
+        message.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          message.style.color = "#00ffcc";
+          message.textContent = "Sign up successful!";
+        })
+        .catch(error => {
+          message.style.color = "#f44336";
+          message.textContent = "Error: " + error.message;
+          console.error("Sign-up error:", error);
+        });
+    }
+
+    function logIn() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const rememberMe = document.getElementById("rememberMe").checked;
+      const message = document.getElementById("message");
+
+      console.log("Remember Me checked:", rememberMe);
+
+      if (!email || !password) {
+        message.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      const persistence = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+
+      auth.setPersistence(persistence)
+        .then(() => {
+          console.log("Persistence set to:", persistence);
+          return auth.signInWithEmailAndPassword(email, password);
+        })
+        .then(() => {
+          message.style.color = "#00ffcc";
+          message.textContent = "Login successful!";
+          window.location.href = "main.html";
+        })
+        .catch(error => {
+          message.style.color = "#f44336";
+          message.textContent = "Error: " + error.message;
+          console.error("Login error:", error);
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        console.log("User is logged in:", user.email);
+
+        document.getElementById("message").textContent = `Welcome back, ${user.email}!`;
+      } else {
+        console.log("No user is logged in.");
+      }
+    });
+  </script>
+</body>
+
+</html>
