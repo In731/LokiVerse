@@ -1,14 +1,13 @@
 // --- 1. FIREBASE SETUP ---
 
 // js/index.js
-// Import Firebase SDKs
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js";
-
+// js/index.js
 document.addEventListener("DOMContentLoaded", () => {
   if (window.firebaseConfig && window.firebaseConfig.apiKey) {
-    const app = initializeApp(window.firebaseConfig);
-    const db = getFirestore(app);
+    // Load Firebase globally (compat mode)
+    const firebase = window['firebase-app-compat']; // Ensure this is loaded via script tag
+    const app = firebase.initializeApp(window.firebaseConfig);
+    const db = firebase.firestore(); // Use firestore from the global firebase object
     console.log("Firebase initialized", app);
   } else {
     console.error("Firebase config is missing or incomplete");
@@ -678,6 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
 
 });
+
 
 
 
