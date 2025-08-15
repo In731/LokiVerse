@@ -4,6 +4,7 @@
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "css/*.css", "use": "@vercel/static" },
     { "src": "js/*.js", "use": "@vercel/static" }
+    { "src": "images/*", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/js/firebase-config.js", "dest": "js/firebase-config.js" },
