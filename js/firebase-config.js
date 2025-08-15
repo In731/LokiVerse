@@ -1,4 +1,4 @@
-// firebase-config.js
+// js/firebase-config.js
 window.firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
