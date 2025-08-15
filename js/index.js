@@ -2,6 +2,8 @@
 
 // js/index.js
 // Import Firebase SDKs
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js";
 
 // Wait for DOM content to load and initialize Firebase
 document.addEventListener("DOMContentLoaded", () => {
