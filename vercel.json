@@ -1,0 +1,8 @@
+{
+  "builds": [
+    { "src": "js/firebase-config.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/js/firebase-config.js", "dest": "js/firebase-config.js" }
+  ]
+}
