@@ -32,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Call the initialization function
   initializeFirebase();
 });
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+
 
 // --- TEXT-TO-SPEECH SETUP ---
 let synth = window.speechSynthesis;
@@ -695,6 +693,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
 
 });
+
 
 
 
