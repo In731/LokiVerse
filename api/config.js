@@ -1,3 +1,4 @@
+
 // api/config.js
 module.exports = (req, res) => {
   res.setHeader('Content-Type', 'application/json');
