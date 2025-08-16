@@ -2,7 +2,10 @@
 
 // js/index.js
 // js/index.js
+// js/index.js
 document.addEventListener("DOMContentLoaded", () => {
+  window.firebaseConfig = null; // Initialize as null to avoid undefined
+
   async function initializeFirebase() {
     try {
       // Fetch the Firebase config
@@ -26,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Call the initialization function
   initializeFirebase();
 });
 // Initialize Firebase
@@ -691,6 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
 
 });
+
 
 
 
