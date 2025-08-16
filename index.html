@@ -12,6 +12,13 @@
     <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js"></script>
+    <script>
+        async function loadFirebaseConfig() {
+        const response = await fetch('/api/config');
+        window.firebaseConfig = await response.json();
+  }
+          loadFirebaseConfig();
+        </script>
      <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -524,6 +531,7 @@
 
 
 </html>
+
 
 
 
