@@ -2,16 +2,22 @@
 
 // js/index.js
 // js/index.js
+// js/index.js
 document.addEventListener("DOMContentLoaded", () => {
-  if (window.firebaseConfig && window.firebaseConfig.apiKey) {
-    // Load Firebase globally (compat mode)
-    const firebase = window['firebase-app-compat']; // Ensure this is loaded via script tag
-    const app = firebase.initializeApp(window.firebaseConfig);
-    const db = firebase.firestore(); // Use firestore from the global firebase object
-    console.log("Firebase initialized", app);
-  } else {
-    console.error("Firebase config is missing or incomplete");
+  function checkConfig() {
+    if (window.firebaseConfig && window.firebaseConfig.apiKey) {
+      const firebase = window['firebase-app-compat'];
+      const app = firebase.initializeApp(window.firebaseConfig);
+      const db = firebase.firestore();
+      console.log("Firebase initialized", app);
+    } else if (!window.firebaseConfig) {
+      console.error("Firebase config not loaded yet, retrying...");
+      setTimeout(checkConfig, 100); // Retry after 100ms
+    } else {
+      console.error("Firebase config is incomplete");
+    }
   }
+  checkConfig();
 });
 
 // Initialize Firebase
@@ -677,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
 
 });
+
 
 
 
