@@ -112,39 +112,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- GLOBAL MODAL FUNCTIONS ---
-  window.openStoryModal = async (storyId) => {
-    const modal = document.getElementById('storyModal');
-    const modalBody = document.getElementById('modalBody');
-    if (!modal || !modalBody || !db) return;
+window.openStoryModal = async (storyId) => {
+  const modal = document.getElementById('storyModal');
+  const modalBody = document.getElementById('modalBody');
+  if (!modal || !modalBody || !db) return;
 
-    modalBody.innerHTML = '<p class="text-center text-gray-300 p-8">Loading story...</p>';
-    modal.classList.remove('hidden');
+  modalBody.innerHTML = '<p class="text-center text-gray-300 p-8">Loading story...</p>';
+  modal.classList.remove('hidden');
 
-    try {
-      const doc = await db.collection('characters').doc(storyId).get();
-      if (doc.exists) {
-        const story = doc.data();
-        modalBody.innerHTML = `
-          <div class="tts-controls flex items-center gap-2 mb-4">
-            <button class="play-tts px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700">Play</button>
-            <button class="pause-tts px-3 py-1 bg-gray-600 text-white rounded disabled:opacity-50" disabled>Pause</button>
-            <button class="stop-tts px-3 py-1 bg-red-600 text-white rounded disabled:opacity-50" disabled>Stop</button>
-            <select class="voice-selector bg-gray-800 text-white rounded px-2 py-1 text-sm"></select>
-          </div>
-          <h2 class="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-4">${story.name || 'Untitled'}</h2>
-          ${story.imageUrl ? `<img src="${story.imageUrl}" alt="${story.name}" class="w-full h-auto max-h-80 object-cover rounded-lg mb-6 shadow-lg">` : ''}
-          <div class="markdown-content text-gray-300 space-y-4 prose prose-invert max-w-none">
-            ${marked.parse(story.story || 'No story content available.')}
-          </div>`;
-        setupTTS(modalBody.querySelector('.markdown-content'), modalBody.querySelector('.tts-controls'));
-      } else {
-        modalBody.innerHTML = '<p class="text-center text-red-500 p-8">Could not find this story.</p>';
-      }
-    } catch (error) {
-      console.error('Error loading story:', error);
-      modalBody.innerHTML = '<p class="text-center text-red-500 p-8'>Error loading story. Check console and Firebase config.</p>';
+  try {
+    const doc = await db.collection('characters').doc(storyId).get();
+    if (doc.exists) {
+      const story = doc.data();
+      modalBody.innerHTML = `
+        <div class="tts-controls flex items-center gap-2 mb-4">
+          <button class="play-tts px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700">Play</button>
+          <button class="pause-tts px-3 py-1 bg-gray-600 text-white rounded disabled:opacity-50" disabled>Pause</button>
+          <button class="stop-tts px-3 py-1 bg-red-600 text-white rounded disabled:opacity-50" disabled>Stop</button>
+          <select class="voice-selector bg-gray-800 text-white rounded px-2 py-1 text-sm"></select>
+        </div>
+        <h2 class="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-4">${story.name || 'Untitled'}</h2>
+        ${story.imageUrl ? `<img src="${story.imageUrl}" alt="${story.name}" class="w-full h-auto max-h-80 object-cover rounded-lg mb-6 shadow-lg">` : ''}
+        <div class="markdown-content text-gray-300 space-y-4 prose prose-invert max-w-none">
+          ${marked.parse(story.story || 'No story content available.')}
+        </div>`;
+      setupTTS(modalBody.querySelector('.markdown-content'), modalBody.querySelector('.tts-controls'));
+    } else {
+      modalBody.innerHTML = '<p class="text-center text-red-500 p-8">Could not find this story.</p>';
     }
-  };
+  } catch (error) {
+    console.error('Error loading story:', error);
+    modalBody.innerHTML = '<p class="text-center text-red-500 p-8">Error loading story. Check console and Firebase config.</p>';
+  }
+};
 
   window.closeStoryModal = () => {
     const modal = document.getElementById('storyModal');
@@ -648,3 +648,4 @@ document.addEventListener("DOMContentLoaded", () => {
   generateCards();
   setupCarousel();
 });
+
