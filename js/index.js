@@ -1,17 +1,19 @@
 // --- 1. FIREBASE SETUP ---
 
 // js/index.js
-// js/index.js
-// js/index.js
 document.addEventListener("DOMContentLoaded", () => {
   function checkConfig() {
-    if (window.firebaseConfig && window.firebaseConfig.apiKey) {
+    if (window.firebaseConfig && window.firebaseConfig.apiKey && window['firebase-app-compat']) {
       const firebase = window['firebase-app-compat'];
-      const app = firebase.initializeApp(window.firebaseConfig);
-      const db = firebase.firestore();
-      console.log("Firebase initialized", app);
-    } else if (!window.firebaseConfig) {
-      console.error("Firebase config not loaded yet, retrying...");
+      try {
+        const app = firebase.initializeApp(window.firebaseConfig);
+        const db = firebase.firestore();
+        console.log("Firebase initialized", app);
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+      }
+    } else if (!window.firebaseConfig || !window['firebase-app-compat']) {
+      console.log("Firebase config or scripts not loaded yet, retrying...");
       setTimeout(checkConfig, 100); // Retry after 100ms
     } else {
       console.error("Firebase config is incomplete");
@@ -19,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   checkConfig();
 });
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -683,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
 
 });
+
 
 
 
