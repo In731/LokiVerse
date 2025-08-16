@@ -1,29 +1,35 @@
 // --- 1. FIREBASE SETUP ---
 
 // js/index.js
+// js/index.js
 document.addEventListener("DOMContentLoaded", () => {
-  function checkConfig() {
-    if (window.firebaseConfig && window.firebaseConfig.apiKey && window['firebase-app-compat']) {
-      const firebase = window['firebase-app-compat'];
-      try {
-        const app = firebase.initializeApp(window.firebaseConfig);
-        const db = firebase.firestore();
-        console.log("Firebase initialized", app);
-      } catch (error) {
-        console.error("Firebase initialization failed:", error);
+  async function initializeFirebase() {
+    try {
+      // Fetch the Firebase config
+      const response = await fetch('/api/config');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      window.firebaseConfig = await response.json();
+      console.log("Firebase config loaded", window.firebaseConfig);
+
+      // Ensure Firebase is available
+      if (!window['firebase-app-compat']) {
+        throw new Error("Firebase script not loaded");
       }
-    } else if (!window.firebaseConfig || !window['firebase-app-compat']) {
-      console.log("Firebase config or scripts not loaded yet, retrying...");
-      setTimeout(checkConfig, 100); // Retry after 100ms
-    } else {
-      console.error("Firebase config is incomplete");
+
+      // Initialize Firebase
+      const firebase = window['firebase-app-compat'];
+      const app = firebase.initializeApp(window.firebaseConfig);
+      const db = firebase.firestore();
+      console.log("Firebase initialized", app);
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
     }
   }
-  checkConfig();
+
+  initializeFirebase();
 });
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+
 
 // --- TEXT-TO-SPEECH SETUP ---
 let synth = window.speechSynthesis;
@@ -684,6 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
 
 });
+
 
 
 
