@@ -1,4 +1,7 @@
 // js/index.js
+// Register GSAP plugins
+gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger);
+
 // Global variables
 let db = null;
 
@@ -139,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error('Error loading story:', error);
-      modalBody.innerHTML = '<p class="text-center text-red-500 p-8">Error loading story. Check console and Firebase config.</p>';
+      modalBody.innerHTML = '<p class="text-center text-red-500 p-8'>Error loading story. Check console and Firebase config.</p>';
     }
   };
 
