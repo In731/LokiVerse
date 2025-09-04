@@ -14,35 +14,20 @@ let db = null;
 document.addEventListener("DOMContentLoaded", () => {
   window.firebaseConfig = null; // Initialize as null to avoid undefined
 
-  async function initializeFirebase() {
-    try {
-      // Fetch the Firebase config
-      const response = await fetch('/api/config');
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      window.firebaseConfig = await response.json();
-      console.log("Firebase config loaded", window.firebaseConfig);
+  const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
 
-      // Ensure Firebase is available
-      if (!window['firebase-app-compat']) {
-        throw new Error("Firebase script not loaded");
-      }
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-      // Initialize Firebase
-      const firebase = window['firebase-app-compat'];
-      const app = firebase.initializeApp(window.firebaseConfig);
-      db = firebase.firestore(); // Set global db
-      console.log("Firebase initialized", app);
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
-    }
-  }
-
-  // Call the initialization function and proceed with app logic
-  initializeFirebase().then(() => {
-    displayPublicStories();
-    setupScrollAnimations();
-    setupCarousel();
-  });
 
   // --- TEXT-TO-SPEECH SETUP ---
   let synth = window.speechSynthesis;
@@ -653,3 +638,4 @@ document.addEventListener("DOMContentLoaded", () => {
   generateCards();
   setupCarousel();
 });
+
