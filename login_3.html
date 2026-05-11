@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <title>LokiVerse Login</title>
   <link rel="icon" type="image/png"
-    href="C:\Users\MUKESH\OneDrive\Desktop\loki-multiverse\Screenshot 2025-07-16 173442.png" />
+    href="images/logo.png" />
   <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
   <!-- jQuery for text animation -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -957,29 +957,56 @@
       });
     });
 
-    // Replace with your actual Firebase configuration from the Firebase Console
-    const firebaseConfig = {
-      apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.FIREBASE_APP_ID,
-      measurementId: process.env.FIREBASE_MEASUREMENT_ID
-    };
+    let auth;
 
-    // Initialize Firebase
-    try {
-      firebase.initializeApp(firebaseConfig);
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
+    async function initializeFirebase() {
+      try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        const firebaseConfig = {
+          apiKey: config.apiKey,
+          authDomain: config.authDomain,
+          projectId: config.projectId,
+          storageBucket: config.storageBucket,
+          messagingSenderId: config.messagingSenderId,
+          appId: config.appId,
+          measurementId: config.measurementId
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        auth = firebase.auth();
+        
+        // Setup auth state change listener after auth is ready
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            console.log("User is logged in:", user.email);
+            document.getElementById("message").textContent = `Welcome back, ${user.email}!`;
+          } else {
+            console.log("No user is logged in.");
+          }
+        });
+
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        document.getElementById("message").textContent = "Error initializing authentication service.";
+      }
     }
-    const auth = firebase.auth();
+
+    initializeFirebase();
 
     function signUp() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const message = document.getElementById("message");
+
+      if (!auth) {
+        message.textContent = "Authentication is still initializing. Please wait...";
+        return;
+      }
 
       if (!email || !password) {
         message.textContent = "Please fill in all fields.";
@@ -990,6 +1017,9 @@
         .then(() => {
           message.style.color = "#00ffcc";
           message.textContent = "Sign up successful!";
+          setTimeout(() => {
+            window.location.href = "main.html";
+          }, 1000);
         })
         .catch(error => {
           message.style.color = "#f44336";
@@ -1005,6 +1035,11 @@
       const message = document.getElementById("message");
 
       console.log("Remember Me checked:", rememberMe);
+
+      if (!auth) {
+        message.textContent = "Authentication is still initializing. Please wait...";
+        return;
+      }
 
       if (!email || !password) {
         message.textContent = "Please fill in all fields.";
@@ -1029,16 +1064,6 @@
           console.error("Login error:", error);
         });
     }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log("User is logged in:", user.email);
-
-        document.getElementById("message").textContent = `Welcome back, ${user.email}!`;
-      } else {
-        console.log("No user is logged in.");
-      }
-    });
   </script>
 </body>
 

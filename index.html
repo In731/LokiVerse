@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LokiVerse </title>
-    <link rel="icon" type="image/png" href="/images/logo.png" />
-    <link rel="stylesheet" href="/css/index.css">
+    <link rel="icon" type="image/png" href="images/logo.png" />
+    <link rel="stylesheet" href="css/index.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
@@ -82,7 +82,7 @@
                                 </div>
                                 <div
                                     class="font-bold text-lg bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                                    <img src="/images/logo.png" alt="LokiVerse Logo">
+                                    <img src="images/logo.png" alt="LokiVerse Logo">
                                 </div>
                             </div>
                         </div>
@@ -202,7 +202,7 @@
                                 class="relative bg-gray-900/70 backdrop-blur-lg border border-indigo-500/20 p-6 rounded-xl shadow-xl group-hover:border-indigo-500/40 transition-all duration-300">
                                 <div class="flex flex-col">
                                     <div class="feature-box">
-                                        <img src="/images/stickers.png" alt="Iron Man" class="sticker left-sticker" />
+                                        <img src="images/stickers.png" alt="Iron Man" class="sticker left-sticker" />
                                         <div class="font-medium text-xl text-white mb-3">⚙️ AI-Powered Story Engine
                                         </div>
                                     </div>
@@ -221,7 +221,7 @@
                                 class="relative bg-gray-900/70 backdrop-blur-lg border border-purple-500/20 p-6 rounded-xl shadow-xl group-hover:border-purple-500/40 transition-all duration-300">
                                 <div class="flex flex-col">
                                     <div class="feature-box">
-                                        <img src="/images/loki.png" alt="Captain America"
+                                        <img src="images/loki.png" alt="Captain America"
                                             class="sticker right-sticker" />
                                         <div class="font-medium text-xl text-white mb-3">🛰️ Cross-Timeline
                                             Responsiveness</div>
@@ -352,7 +352,7 @@
 
                                 <!-- 1. Add your Formspree URL to the "action" attribute -->
                                 <!-- 2. Set the "method" attribute to "POST" -->
-                                <form action={`https://formspree.io/f/${process.env.FORMSPREE_ID}`} method="POST">
+                                <form id="contactForm" method="POST">
                                     <div class="grid md:grid-cols-2 gap-4 mb-4">
                                         <div>
                                             <label for="contact-name"
@@ -439,7 +439,7 @@
                                 </div>
                                 <div
                                     class="font-bold text-xs bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                                    <img src="/images/logo.png" alt="">
+                                    <img src="images/logo.png" alt="">
                                 </div>
                             </div>
                         </div>
@@ -522,7 +522,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="/js/index.js" defer></script>
+  <script src="js/index.js" defer></script>
    
 </body>
 

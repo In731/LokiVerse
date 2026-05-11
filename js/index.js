@@ -12,21 +12,41 @@ if (typeof gsap !== 'undefined') {
 let db = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  window.firebaseConfig = null; // Initialize as null to avoid undefined
+  // Fetch config from API
+  async function initializeApp() {
+    try {
+      const response = await fetch('/api/config');
+      const config = await response.json();
+      
+      const firebaseConfig = {
+        apiKey: config.apiKey,
+        authDomain: config.authDomain,
+        projectId: config.projectId,
+        storageBucket: config.storageBucket,
+        messagingSenderId: config.messagingSenderId,
+        appId: config.appId,
+        measurementId: config.measurementId,
+      };
 
-  const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-};
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.firestore(); // Initialize global db variable
+      
+      // Handle Formspree action if form exists
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm && config.formspreeId) {
+        contactForm.action = `https://formspree.io/f/${config.formspreeId}`;
+      }
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+      // Re-run any logic that depends on db/Firebase
+      displayPublicStories();
+    } catch (error) {
+      console.error("Failed to initialize app:", error);
+    }
+  }
+
+  initializeApp();
 
 
   // --- TEXT-TO-SPEECH SETUP ---

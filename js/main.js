@@ -1,17 +1,53 @@
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-};
+let auth;
+let db;
+let globalConfig = {};
 
+async function initializeApp() {
+    try {
+        const response = await fetch('/api/config');
+        globalConfig = await response.json();
+        
+        const firebaseConfig = {
+            apiKey: globalConfig.apiKey,
+            authDomain: globalConfig.authDomain,
+            projectId: globalConfig.projectId,
+            storageBucket: globalConfig.storageBucket,
+            messagingSenderId: globalConfig.messagingSenderId,
+            appId: globalConfig.appId,
+            measurementId: globalConfig.measurementId
+        };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        auth = firebase.auth();
+        db = firebase.firestore();
+
+        // Setup auth listener after initialization
+        setupAuthListener();
+    } catch (error) {
+        console.error("Failed to initialize app:", error);
+    }
+}
+
+initializeApp();
+
+function setupAuthListener() {
+    auth.onAuthStateChanged(user => {
+        console.log('Auth State:', user ? user.uid : 'No user');
+        if (!user) {
+            // alert("✅ You have been logged out successfully");
+            window.location.href = "login_3.html"; // Fixed redirect
+        } else {
+            const email = user.email || "User";
+            const initial = email.charAt(0).toUpperCase();
+            document.getElementById("profileBadge").textContent = initial;
+            document.getElementById("userEmail").textContent = `Email: ${email}`;
+            displayCharacters();
+            displayStoryCount();
+        }
+    });
+}
 
 // Main Logic
 document.addEventListener('DOMContentLoaded', () => {
@@ -139,20 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     highlightCurrentSection();
 
     // Firebase Authentication
-    auth.onAuthStateChanged(user => {
-        console.log('Auth State:', user ? user.uid : 'No user');
-        if (!user) {
-            alert("✅ You have been logged out successfully");
-            window.location.href = "login.html";
-        } else {
-            const email = user.email || "User";
-            const initial = email.charAt(0).toUpperCase();
-            document.getElementById("profileBadge").textContent = initial;
-            document.getElementById("userEmail").textContent = `Email: ${email}`;
-            displayCharacters();
-            displayStoryCount();
-        }
-    });
+    // auth listener moved to setupAuthListener function
 
     // Display Story Count in Profile
     async function displayStoryCount() {
@@ -221,7 +244,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
     async function enhancePromptWithAI(prompt) {
         showLoadingOverlay();
         try {
-            const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+            const GEMINI_API_KEY = globalConfig.geminiApiKey;
             const response = await fetchWithRetry(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
                 {
@@ -289,7 +312,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
 
             try {
                 const res = await fetchWithRetry(
-                    `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
+                    `https://api.cloudinary.com/v1_1/${globalConfig.cloudinaryCloudName}/image/upload`,
                     {
                         method: "POST",
                         body: formData,
@@ -310,7 +333,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
         }
 
         try {
-            const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+            const GEMINI_API_KEY = globalConfig.geminiApiKey;
             let requestBody = {
                 contents: [{
                     parts: [{
@@ -690,7 +713,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
                 formData.append("upload_preset", "loki_Uploads");
                 try {
                     const res = await fetchWithRetry(
-                        `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`, // Replace {your_cloud_name}
+                        `https://api.cloudinary.com/v1_1/${globalConfig.cloudinaryCloudName}/image/upload`, // Replace {your_cloud_name}
                         {
                             method: "POST",
                             body: formData,
@@ -807,7 +830,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
                 formData.append("upload_preset", "loki_Uploads");
                 try {
                     const res = await fetchWithRetry(
-                        `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`, // Replace {your_cloud_name}
+                        `https://api.cloudinary.com/v1_1/${globalConfig.cloudinaryCloudName}/image/upload`, // Replace {your_cloud_name}
                         {
                             method: "POST",
                             body: formData,
@@ -832,7 +855,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
             let finalPrompt = initialPrompt;
 
             try {
-                const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+                const GEMINI_API_KEY = globalConfig.geminiApiKey;
                 const response = await fetchWithRetry(
                     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
                     {
@@ -1009,14 +1032,14 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
 
         try {
             console.log('Fetching characters for user:', user.uid);
+            // Temporarily removing orderBy to check if it's an index issue
             const snapshot = await db.collection("characters")
                 .where("userId", "==", user.uid)
-                .orderBy("createdAt", "desc")
                 .get();
             console.log('Firestore snapshot:', snapshot.size, 'documents');
 
             if (snapshot.empty) {
-                list.innerHTML = `<p class="col-span-3 text-center text-gray-400">You haven't created any stories yet.</p>`;
+                list.innerHTML = `<p class="col-span-3 text-center text-gray-400">You haven't created any stories yet. Start by creating one above!</p>`;
                 return;
             }
 
@@ -1190,7 +1213,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
     // Logout
     window.logout = function () {
         auth.signOut().then(() => {
-            window.location.href = "login.html";
+            window.location.href = "login_3.html";
         }).catch((error) => {
             console.error("Logout Error:", error);
         });
