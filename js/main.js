@@ -37,7 +37,7 @@ function setupAuthListener() {
         console.log('Auth State:', user ? user.uid : 'No user');
         if (!user) {
             // alert("✅ You have been logged out successfully");
-            window.location.href = "login_3.html"; // Fixed redirect
+            window.location.href = "login.html"; // Fixed redirect
         } else {
             const email = user.email || "User";
             const initial = email.charAt(0).toUpperCase();
@@ -1213,7 +1213,7 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
     // Logout
     window.logout = function () {
         auth.signOut().then(() => {
-            window.location.href = "login_3.html";
+            window.location.href = "login.html";
         }).catch((error) => {
             console.error("Logout Error:", error);
         });

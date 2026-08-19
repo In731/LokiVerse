@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>LokiVerse Login</title>
+  <link rel="icon" type="image/png"
+    href="images/logo.png" />
+  <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+  <!-- jQuery for text animation -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="login-container">
+      <span class="glow"></span>
+      <div class="inner">
+        <header>
+          <svg class="sun" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </g>
+          </svg>
+          <h2>Welcome!</h2>
+          <svg class="moon" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+          </svg>
+        </header>
+        <div class="content">
+          <div class="logo-container">
+            <div class="logo-wrapper">
+              <div class="logo-blur"></div>
+              <div class="logo-box">
+                <div class="logo-inner">
+                  <div class="logo-gradient"></div>
+                  <div class="logo-image">
+                    <img src="images/logo.png" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="logo-text">LokiVerse</div>
+          </div>
+          <input type="email" id="email" placeholder="Email" />
+          <input type="password" id="password" placeholder="Password" />
+          <div class="remember-wrapper">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">Remember Me</label>
+          </div>
+          <div style="text-align: center;">
+            <button onclick="signUp()">Sign Up</button>
+            <button onclick="logIn()">Log In</button>
+          </div>
+          <p id="message"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODIFIED: Adjusted viewBox and y-coordinates for larger text -->
+  <svg class="intro" viewBox="0 0 1200 900">
+    <defs>
+      <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#818cf8" />
+        <stop offset="50%" style="stop-color:#22d3ee" />
+        <stop offset="100%" style="stop-color:#9333ea" />
+      </linearGradient>
+      <clipPath id="text1">
+        <text text-anchor="end" x="1190" y="250" class="text">Chaos is</text>
+      </clipPath>
+      <clipPath id="text2">
+        <text text-anchor="end" x="1190" y="500" class="text">Just the</text>
+      </clipPath>
+      <clipPath id="text3">
+        <text text-anchor="end" x="1190" y="750" class="text">Beginning</text>
+      </clipPath>
+    </defs>
+    <text text-anchor="end" x="1190" y="250" class="text text-stroke" clip-path="url(#text1)">Chaos is</text>
+    <text text-anchor="end" x="1190" y="500" class="text text-stroke" clip-path="url(#text2)">Just the</text>
+    <text text-anchor="end" x="1190" y="750" class="text text-stroke" clip-path="url(#text3)">Beginning</text>
+    <text text-anchor="end" x="1190" y="250" class="text text-stroke text-stroke-2" clip-path="url(#text1)">Chaos
+      is</text>
+    <text text-anchor="end" x="1190" y="500" class="text text-stroke text-stroke-2" clip-path="url(#text2)">Just
+      the</text>
+    <text text-anchor="end" x="1190" y="750" class="text text-stroke text-stroke-2"
+      clip-path="url(#text3)">Beginning</text>
+  </svg>
+  <div>
+    <button class="reload">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1"
+        x="0px" y="0px" width="16px" height="16px" viewBox="0 0 92.33 92.33"
+        style="enable-background:new 0 0 92.33 92.33;" xml:space="preserve">
+        <g>
+          <path
+            d="M70.598,16.753c-1.722-1.24-4.113-0.852-5.349,0.866c-1.242,1.716-0.853,4.113,0.865,5.35   c13.613,9.818,18.021,27.857,10.482,42.89c-4.082,8.138-11.088,14.202-19.726,17.066c-8.636,2.871-17.877,2.2-26.013-1.879   c-8.134-4.083-14.197-11.088-17.066-19.722c-2.866-8.642-2.197-17.877,1.886-26.014c4.958-9.89,14.458-16.779,25.413-18.429   c0.074-0.008,0.137-0.036,0.211-0.053l0.157,7.571c0.021,0.839,0.542,1.585,1.321,1.889c0.782,0.305,1.672,0.11,2.25-0.496   l10.904-11.379c0.794-0.828,0.764-2.142-0.062-2.933L44.492,0.577c-0.606-0.582-1.499-0.739-2.267-0.399   c-0.251,0.108-0.476,0.269-0.662,0.462c-0.372,0.389-0.585,0.919-0.579,1.479l0.151,7.212c-0.385-0.063-0.78-0.087-1.188-0.027   c-13.418,2.021-25.052,10.46-31.125,22.571C-1.499,52.451,6.85,77.584,27.424,87.901c5.989,3.005,12.362,4.429,18.646,4.429   c15.306,0,30.065-8.439,37.382-23.028C92.688,50.884,87.284,28.782,70.598,16.753z"
+            fill="#404853" />
+        </g>
+      </svg>
+      reload
+    </button>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+
+</html>
