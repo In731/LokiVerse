@@ -27,6 +27,10 @@
       "dest": "api/config.js"
     },
     {
+      "src": "/api/generate",
+      "dest": "api/generate.js"
+    },
+    {
       "handle": "filesystem"
     }
   ]

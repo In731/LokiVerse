@@ -244,9 +244,8 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
     async function enhancePromptWithAI(prompt) {
         showLoadingOverlay();
         try {
-            const GEMINI_API_KEY = globalConfig.geminiApiKey;
             const response = await fetchWithRetry(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
+                `/api/generate`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -333,7 +332,6 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
         }
 
         try {
-            const GEMINI_API_KEY = globalConfig.geminiApiKey;
             let requestBody = {
                 contents: [{
                     parts: [{
@@ -342,12 +340,11 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
                 }]
             };
             if (isEnhanced) {
-                requestBody.contents[0].parts[0].text += `
-- **Quality Boost**: Elevate the narrative with richer character development, intricate plot twists, and cinematic detail. Use advanced storytelling techniques to create a polished, professional-grade Marvel epic, surpassing the quality of a standard prompt-generated story.`;
+                requestBody.contents[0].parts[0].text += `\n- **Quality Boost**: Elevate the narrative with richer character development, intricate plot twists, and cinematic detail. Use advanced storytelling techniques to create a polished, professional-grade Marvel epic, surpassing the quality of a standard prompt-generated story.`;
             }
 
             const response = await fetchWithRetry(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
+                `/api/generate`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -855,9 +852,8 @@ Ensure the story is concise, emotionally resonant, and captures the essence of a
             let finalPrompt = initialPrompt;
 
             try {
-                const GEMINI_API_KEY = globalConfig.geminiApiKey;
                 const response = await fetchWithRetry(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
+                    `/api/generate`,
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },

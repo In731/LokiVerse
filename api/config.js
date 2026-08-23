@@ -10,7 +10,6 @@ module.exports = (req, res) => {
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID,
     measurementId: process.env.FIREBASE_MEASUREMENT_ID,
-    geminiApiKey: process.env.GEMINI_API_KEY,
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
     formspreeId: process.env.FORMSPREE_ID
   });
